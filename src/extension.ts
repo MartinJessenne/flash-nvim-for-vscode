@@ -196,16 +196,6 @@ export function activate(context: vscode.ExtensionContext) {
 						matchStart: range.start,
 						relativeDis: relativeVsCodePosition(range.start)
 					});
-
-					// Add end position label (only if different from start)
-					if (!range.start.isEqual(range.end)) {
-						allMatches.push({
-							editor,
-							range,
-							matchStart: range.end,
-							relativeDis: relativeVsCodePosition(range.end)
-						});
-					}
 				}
 			}
 		} catch (error) {
@@ -363,7 +353,7 @@ export function activate(context: vscode.ExtensionContext) {
 		// deduplicate nextChars
 		const allNextChars = [ ...new Set(nextChars) ];
 		// all characters that are in labelChars but not in allNextChars
-		const useableLabelChars = labelChars.split('').filter(c => !allNextChars.includes(c));
+		const useableLabelChars = isMode(flashVscodeModes.symbol) ? labelChars.split('') : labelChars.split('').filter(c => !allNextChars.includes(c));
 
 		// create an label array with length equal to the number of matches, and fill it with the useableLabelChars
 		// if there are more matches than useableLabelChars, then fill the array with the useableLabelChars and then
@@ -434,6 +424,30 @@ export function activate(context: vscode.ExtensionContext) {
 							before: { contentText: char }
 						}
 					});
+
+					if (isMode(flashVscodeModes.symbol) && isSelection) {
+						let endPos: vscode.Position | undefined;
+						if (labelRange.end.character > 0) {
+							endPos = new vscode.Position(labelRange.end.line, labelRange.end.character - 1);
+						} else {
+							if (labelRange.end.line > 0) {
+								const prevLine = editor.document.lineAt(labelRange.end.line - 1);
+								if (prevLine.text.length > 0) {
+									endPos = new vscode.Position(labelRange.end.line - 1, prevLine.text.length - 1);
+								}
+							}
+						}
+
+						if (endPos && !endPos.isEqual(labelRange.start)) {
+							labelPositions.push(endPos);
+							decorationOptions.push({
+								range: new vscode.Range(endPos.line, endPos.character, endPos.line, endPos.character + 1),
+								renderOptions: {
+									before: { contentText: char }
+								}
+							});
+						}
+					}
 				}
 				else {
 					labelPositions.push(match.matchStart);

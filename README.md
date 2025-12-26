@@ -115,17 +115,17 @@ code --install-extension souravahmed.flash-vscode-latest
 
 **Dramatically reduce the friction of selecting, cutting, and copying code.** No more tedious click-dragging, Shift+Arrow key combos, or hunting for scope boundaries!
 
-**Symbol Navigation** (`alt+enter`):
+**Symbol Navigation** (`shift+alt+enter`):
 
 - **Instantly jump to and select any function, class, or variable** in your file
-- Press `alt+f` → `alt+enter` to label all symbols
+- Press `alt+f` → `shift+alt+enter` to label all symbols
 - Hit a label key to select the **entire symbol definition** (from start to end)
 - Perfect for: Quickly selecting functions to cut/copy/refactor
 
-**Treesitter Selection** (`shift+alt+enter`):
+**Treesitter Selection** (`alt+enter`):
 
 - **The fastest way to select code scopes** - expressions, statements, blocks, functions
-- Press `alt+f` (or any active flash mode) → `shift+alt+enter`
+- Press `alt+enter` to label all scopes
 - Labels appear on **both opening and closing boundaries** (`{` and `}`, function start/end, etc.)
 - Includes **sticky scroll context** - parent scopes visible at the top
 - Select a label to **automatically select the entire scope**
