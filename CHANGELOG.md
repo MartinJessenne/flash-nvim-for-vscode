@@ -2,6 +2,14 @@
 
 All notable changes to the "flash-vscode" extension will be documented in this file.
 
+## [0.4.40] - 2025-12-26
+
+### Added
+- **Treesitter End Labels**: Added labels to the end of treesitter ranges for clearer scope visualization (e.g., `{a ... a}`).
+
+### Fixed
+- Fixed an issue where not all available label characters were being utilized in symbol/treesitter mode, ensuring all potential matches are labeled.
+
 ## [0.4.21] - 2025-11-18
 
 ### Added
