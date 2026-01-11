@@ -120,6 +120,7 @@ export function activate(context: vscode.ExtensionContext) {
 	let prevSearchQuery = '';
 	let symbols: vscode.DocumentSymbol[] = [];
 	let isSelection = false;
+	let isRemoteSelection = false;
 
 	// Map of label character to target position and optional full range for selection
 	let labelMap: Map<string, { editor: vscode.TextEditor, position: vscode.Position, range?: vscode.Range }> = new Map();
@@ -526,6 +527,13 @@ export function activate(context: vscode.ExtensionContext) {
 		updateHighlights();
 	});
 
+	const remoteTreesitterSelection = vscode.commands.registerCommand('flash-vscode.remoteTreesitterSelection', () => {
+		updateFlashVscodeMode(flashVscodeModes.active);
+		isRemoteSelection = true;
+		_start();
+		updateHighlights();
+	});
+
 	// Exit navigation mode (clear decorations and reset state)
 	const exit = vscode.commands.registerCommand('flash-vscode.exit', () => {
 		if (!active) { return; };
@@ -540,6 +548,7 @@ export function activate(context: vscode.ExtensionContext) {
 		prevSearchQuery = searchQuery;
 		searchQuery = '';
 		isSelection = false;
+		isRemoteSelection = false;
 		allMatchSortByRelativeDis = undefined;
 		nextMatchIndex = undefined;
 		labelMap.clear();
@@ -561,7 +570,7 @@ export function activate(context: vscode.ExtensionContext) {
 		}
 	});
 
-	const jump = (target: { editor: vscode.TextEditor, position: vscode.Position, range?: vscode.Range }, scroll: boolean = false) => {
+	const jump = async (target: { editor: vscode.TextEditor, position: vscode.Position, range?: vscode.Range }, scroll: boolean = false) => {
 		const targetEditor = target.editor;
 		const targetPos = target.position;
 
@@ -582,7 +591,7 @@ export function activate(context: vscode.ExtensionContext) {
 
 		// If the target is in a different editor, focus that editor
 		if (vscode.window.activeTextEditor !== targetEditor) {
-			vscode.window.showTextDocument(targetEditor.document, targetEditor.viewColumn);
+			await vscode.window.showTextDocument(targetEditor.document, targetEditor.viewColumn);
 		}
 	};
 
@@ -651,7 +660,7 @@ export function activate(context: vscode.ExtensionContext) {
 	// const throttledHandleEnterOrShiftEnter250 = throttle(handleEnterOrShiftEnter, 250);
 
 	// Auto-scroll to matches if all matches are outside visible range
-	const autoScrollToMatchIfNeeded = () => {
+	const autoScrollToMatchIfNeeded = async () => {
 		const activeEditor = vscode.window.activeTextEditor;
 		let isVisible = true;
 		if (activeEditor && allMatches.length > 0) {
@@ -669,7 +678,7 @@ export function activate(context: vscode.ExtensionContext) {
 		}
 
 		if (!isVisible) {
-			jump({ editor: allMatches[ 0 ].editor, position: allMatches[ 0 ].matchStart }, true)
+			await jump({ editor: allMatches[ 0 ].editor, position: allMatches[ 0 ].matchStart }, true)
 			// Reset navigation state so manual enter/shift+enter starts fresh
 			allMatchSortByRelativeDis = undefined;
 			nextMatchIndex = undefined;
@@ -700,7 +709,7 @@ export function activate(context: vscode.ExtensionContext) {
 		updateHighlights();
 	};
 
-	const handleInput = (chr: string) => {
+	const handleInput = async (chr: string) => {
 		if (chr === 'space') {
 			chr = ' ';
 		}
@@ -731,9 +740,14 @@ export function activate(context: vscode.ExtensionContext) {
 				if (labelMap.size > 0 && labelMap.has(text)) {
 					// We have a label matching this key – perform the jump
 					const target = labelMap.get(text)!;
-					jump(target);
+					await jump(target);
 					// Exit navigation mode after jumping
-					vscode.commands.executeCommand('flash-vscode.exit');
+					if (isRemoteSelection) {
+						isRemoteSelection = false;
+						handleSymbolSelection();
+					} else {
+						vscode.commands.executeCommand('flash-vscode.exit');
+					}
 					return;
 				}
 				// Append typed character to the search query
@@ -741,7 +755,7 @@ export function activate(context: vscode.ExtensionContext) {
 				// throttledHandleEnterOrShiftEnter250();
 
 				// Auto-scroll to matches if all matches are outside visible range
-				autoScrollToMatchIfNeeded();
+				await autoScrollToMatchIfNeeded();
 				updateHighlights();
 		}
 
@@ -762,7 +776,7 @@ export function activate(context: vscode.ExtensionContext) {
 	});
 
 	let allChars = searchChars.split('').concat([ 'space', 'treesitterSelection', ...Object.values(flashVscodeModes) ]);
-	context.subscriptions.push(configChangeListener, start, startSelection, exit, backspaceHandler, visChange,
+	context.subscriptions.push(configChangeListener, start, startSelection, remoteTreesitterSelection, exit, backspaceHandler, visChange,
 		...allChars.map(c => vscode.commands.registerCommand(`flash-vscode.jump.${c}`, () => handleInput(c)))
 	);
 }
