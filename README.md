@@ -93,8 +93,9 @@ code --install-extension souravahmed.flash-vscode-latest
    - **Auto-scroll**: If all matches are outside the visible range, Flash automatically scrolls to show the nearest match - no manual scrolling needed!
    - Press `alt+f` or `alt+shift+f` then `enter` to search previously entered query.
    - Select text and press `alt+f` or `alt+shift+f` then `enter` to search and mark the selected text.
-   - Press `shift+alt+enter` to mark all symbols (functions, classes, variables) in the current file.
+   - Press `ctrl+alt+enter` to mark all symbols (functions, classes, variables) in the current file.
    - Press `alt+enter` for treesitter-style selection - marks hierarchical syntactic scopes (expressions, statements, blocks) around cursor for smart selection.
+   - **New:** Press `shift+alt+enter` for **Remote Treesitter Selection** - jump to a location and immediately trigger treesitter selection there.
    - Press `alt+j` or `alt+k` to mark all the next line or previous line.
 
      ![flash enter](https://github.com/user-attachments/assets/e2f932e3-73c6-4acd-9d8c-9937bb116821)
@@ -118,10 +119,10 @@ code --install-extension souravahmed.flash-vscode-latest
 
 **Dramatically reduce the friction of selecting, cutting, and copying code.** No more tedious click-dragging, Shift+Arrow key combos, or hunting for scope boundaries!
 
-**Symbol Navigation** (`shift+alt+enter`):
+**Symbol Navigation** (`ctrl+alt+enter`):
 
 - **Instantly jump to and select any function, class, or variable** in your file
-- Press `alt+f` → `shift+alt+enter` to label all symbols
+- Press `alt+f` → `ctrl+alt+enter` to label all symbols
 - Hit a label key to select the **entire symbol definition** (from start to end)
 - Perfect for: Quickly selecting functions to cut/copy/refactor
 
@@ -134,10 +135,18 @@ code --install-extension souravahmed.flash-vscode-latest
 - Select a label to **automatically select the entire scope**
 - No more manual "find the matching brace" - LSP knows your code structure!
 
+**Remote Treesitter Selection** (`shift+alt+enter`):
+
+- **The Ultimate Flow State Tool.**
+- Spot a block of code you need? Don't move your cursor there first.
+- Press `shift+alt+enter` → Jump to the location → **Flash immediately shows Treesitter scopes** at the destination.
+- Select the scope you want. Done.
+- **Zero friction context switching.** Grab code from anywhere without losing your mental stack.
+
 **Why this matters for daily programming:**
 
 - Want to copy a function? `alt+f` → `alt+enter` → hit the label → `Ctrl+C` ✅
-- Need to select an if-block? `shift+alt+enter` → hit the label → Done ✅
+- Need to select an if-block? `ctrl+alt+enter` → hit the label → Done ✅
 - Refactoring nested code? Jump between scope boundaries instantly ✅
 - **Turns 10+ keystrokes into 2-3 keystrokes** for common selection tasks
 

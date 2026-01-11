@@ -2,6 +2,12 @@
 
 All notable changes to the "flash-vscode" extension will be documented in this file.
 
+## [0.5.2] - 2026-01-11
+
+### Added
+- **Remote Treesitter Selection** (`shift+alt+enter`): A powerful new workflow that combines navigation and selection. Jump to any location and immediately trigger treesitter selection mode upon landing. This allows you to select remote code blocks in a fluid, uninterrupted flow.
+- Swapped **Symbol Navigation** keybinding to `ctrl+alt+enter` for better ergonomics and consistency.
+
 ## [0.4.41] - 2025-12-31
 
 ### Fixed
